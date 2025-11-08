@@ -23,7 +23,7 @@ export class categoryController {
        } catch (error) {
         
         res.status(500).json({
-            msj: "uknow",
+            msj: "uknow error",
             error: error.message
         })
        }
@@ -37,7 +37,7 @@ export class categoryController {
 
         try {
             
-            const response = await prisma.category.findFirst({
+            const response = await prisma.category.findUnique({
                 where: {
                     id: Number(id)
                 },

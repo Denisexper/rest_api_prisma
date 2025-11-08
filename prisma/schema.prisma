@@ -30,3 +30,13 @@ model Category {
   name String @unique
   products Product[]
 }
+
+model Users {
+  id Int @id @default(autoincrement())
+  name String
+  lastName String
+  email String @unique
+  password String
+  createAt DateTime @default(now())
+
+}
