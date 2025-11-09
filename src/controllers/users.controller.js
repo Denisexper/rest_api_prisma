@@ -60,4 +60,89 @@ export class usersController {
 
         }
     }
+
+    async createUser (req, res) {
+        try {
+            
+            const response = await prisma.users.create({
+                data: req.body,
+            })
+
+            res.status(200).json({
+                msj: "user created",
+                data: response
+            })
+
+        } catch (error) {
+            
+            res.status(500).json({
+                msj: "uknow error",
+                error: error.message
+            })
+        }
+    }
+
+    async updateUser (req, res){
+
+        const { id } = req.params;
+
+        try {
+            
+            const response = await prisma.users.update({
+                where:{
+                    id: Number(id),
+                },
+                data: req.body
+            })
+
+            res.status(200).json({
+                msj: "user updated",
+                data: response
+            })
+        } catch (error) {
+            
+            if(error.code === "P2025"){
+                return res.status(404).json({
+                    msj: "user not found"
+                })
+            }
+
+            res.status(500).json({
+                msj: "server error",
+                error: error.message
+            })
+        }
+    }
+
+    async deleteUser (req, res){
+
+        const { id } = req.params;
+
+        try {
+            
+            const response = await prisma.users.delete({
+                where: {
+                    id: Number(id)
+                }
+            })
+
+            res.status(200).json({
+                msj: "user deleted",
+                data: response
+            })
+            
+        } catch (error) {
+
+            if(error.code === "P2025"){
+                return res.status(404).json({
+                    msj: "user not found or invalid ID",
+                })
+            }
+            
+            res.status(500).json({
+                msj: "server error",
+                error: error.message
+            })
+        }
+    }
 }
