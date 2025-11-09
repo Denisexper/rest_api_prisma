@@ -1,11 +1,17 @@
 import { PrismaClient } from "@prisma/client"
+import client from "../services/redis.service.js"
 
 const prisma = new PrismaClient()
 
-export class usersController {
+export class usersController { 
 
     async getAll (req, res) {
         try {
+
+            //despues de la primera vez obtendra los users desde redis porque ya estan guardados
+            const reply = await client.get('users')
+
+            if(reply) return res.json(JSON.parse(reply))
             
             const response = await prisma.users.findMany()
 
@@ -14,6 +20,11 @@ export class usersController {
                     msj: "not users found"
                 })
             }
+
+            //guardar los datos en redis despues de hacer la peticion por primera vez
+            const saveResult = await client.set('users', JSON.stringify(response))
+
+            console.log(saveResult);
 
             res.status(200).json({
                 msj: "users",
@@ -46,7 +57,7 @@ export class usersController {
                     msj: "user not found"
                 })
             }
-
+            
             res.status(200).json({
                 msj: "user",
                 data: response
